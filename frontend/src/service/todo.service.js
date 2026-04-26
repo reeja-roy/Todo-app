@@ -1,7 +1,7 @@
 import axios from 'axios'
 export const createTodo = async (text) => {
     try {
-        const response = await axios.post("http://localhost:4000/api/add", { text })
+        const response = await axios.post("https://todo-app-9zf6.onrender.com/api/add", { text })
         return response.data
 
     } catch(err){
@@ -13,7 +13,7 @@ export const createTodo = async (text) => {
 export const getTodo = async () => {
 
     try {
-        const response = await axios.get("http://localhost:4000/api")
+        const response = await axios.get("https://todo-app-9zf6.onrender.com/api")
         return response.data
     }
     catch(err){
@@ -25,7 +25,7 @@ export const getTodo = async () => {
 export const deleteTodo = async (id) => {
 
     try{
-          const response = await axios.delete(`http://localhost:4000/api/${id}`)
+          const response = await axios.delete(`https://todo-app-9zf6.onrender.com/api/${id}`)
           return response.data
     }catch(err){
 
