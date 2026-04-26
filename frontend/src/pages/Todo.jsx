@@ -3,59 +3,58 @@ import TodoCard from '../components/TodoCard'
 import { useNavigate } from 'react-router-dom'
 import { createTodo, getTodo } from '../service/todo.service'
 
-
-
-
 const Todo = () => {
 
   const navigate = useNavigate()
-  useEffect(() => {
-    const fetchList = async () => {
-      try {
-        const user = localStorage.getItem("isLoggedIn")
-        if (!user) {
-          navigate('/login')
-        }
-        const todo = await getTodo()
-        console.log(todo.data)
-        setList(todo.data)
-
-      } catch (err) {
-
-      }
-    }
-    fetchList()
-  }, [])
-
-
 
   const [todo, setTodo] = useState('')
-
   const [list, setList] = useState([])
+
+useEffect(() => {
+  const fetchList = async () => {
+    try {
+      const user = localStorage.getItem("isLoggedIn");
+
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await getTodo();
+      setList(res.data);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchList();
+}, [navigate]);
+
 
   const handleAdd = async () => {
     try {
-      if (!todo.trim()) return alert("");
+      if (!todo.trim()) return alert("Enter a task")
+
+      const res = await createTodo({ text: todo });
+
+setList((prev) => [res.data.data, ...prev]);
+
+      // ✅ update UI without reload
+      setList((prev) => [res.data.data, ...prev])
 
       setTodo('')
-      window.location.reload();
-      const res = await createTodo(todo)
-
 
     } catch (err) {
-
-      alert("failed")
-
+      console.error(err)
+      alert("Failed to add")
     }
-
   }
 
+
   const handleDeleteList = (id) => {
-      setList((prev) => prev.filter((item) => item._id !== id))
-
-    }
-
-  console.log(list)
+    setList((prev) => prev.filter((item) => item._id !== id))
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
@@ -80,22 +79,23 @@ const Todo = () => {
             }}
           />
 
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition" onClick={handleAdd}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            onClick={handleAdd}
+          >
             Add
           </button>
         </div>
 
-   
         <div className="mt-4 space-y-2">
-
-          {list.map((item, index) => (
-
-
-            <TodoCard key={index} value={item.text} id={item._id} onDelete={handleDeleteList} />
-
+          {list.map((item) => (
+            <TodoCard
+              key={item._id}   // ✅ fixed
+              value={item.text}
+              id={item._id}
+              onDelete={handleDeleteList}
+            />
           ))}
-
-
         </div>
 
       </div>
